@@ -1,12 +1,16 @@
 use std::{
     fmt::{Debug, Display, Formatter, Write},
-    ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign},
+    ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, Not},
 };
 
 /// A boolean field defined over the 9x9 grid of a Sudoku. This stores a yes/no value for each cell
 /// on the board, and defines some useful operators.
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Default)]
 pub struct Bitfield(u128);
+
+const MASK: Bitfield = Bitfield(
+    0b111111111_111111111_111111111_111111111_111111111_111111111_111111111_111111111_111111111,
+);
 
 impl Bitfield {
     /// Create a new bitfield, with exactly one bit set, corresponding to the cell at position
@@ -109,6 +113,14 @@ impl BitAnd for Bitfield {
 impl BitAndAssign for Bitfield {
     fn bitand_assign(&mut self, rhs: Self) {
         *self = *self & rhs;
+    }
+}
+
+impl Not for Bitfield {
+    type Output = Self;
+
+    fn not(self) -> Self::Output {
+        Bitfield(!self.0) & MASK
     }
 }
 
